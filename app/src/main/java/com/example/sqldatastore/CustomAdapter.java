@@ -28,25 +28,29 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.VIEWHOLDER
 
     @NonNull
     @Override
-    public CustomAdapter.VIEWHOLDER onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public VIEWHOLDER onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate( R.layout.sample_layout , parent , false);
         return new VIEWHOLDER(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CustomAdapter.VIEWHOLDER holder, int position) {
+    public void onBindViewHolder(@NonNull VIEWHOLDER holder, int position) {
         Model_class model = mData.get(position);
         holder.title.setText(model.getTitle());
         holder.details.setText(model.getDetails());
 
                   // for image through on Internet //
+try {
+    Glide
+            .with(mContext)
+            .load(mData.get(position).getImage())
+            .centerCrop()
+            .placeholder(R.mipmap.ic_launcher_round)
+            .into(holder.image);
+}catch (Exception e){
 
-        Glide
-                .with(mContext)
-                .load(mData.get(position).getImage())
-                .centerCrop()
-                .placeholder(R.mipmap.ic_launcher_round)
-                .into(holder.image);
+}
+
     }
 
     @Override

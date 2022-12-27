@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     List<Model_class> list;
     RecyclerView recyclerView;
-
+    DBhelper dbhandler;
+    SQLiteDatabase db;
     private static String Json_url = "https://foysal-official.web.app/fb_status.json";
 
     @Override
@@ -42,9 +43,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycler_view);
         list = new ArrayList<>();
-
+        dbhandler = new DBhelper(MainActivity.this);
+        db = dbhandler.getReadableDatabase();
         /*  GetData getData = new GetData();
             getData.execute();   */
+        List<Model_class> offilendata = dbhandler.getAllData(db);
+        Log.d("DATABASE", offilendata.toString());
+        PutdataIntoRecyclerView(offilendata);
     }
 
     @SuppressLint("RestrictedApi")
@@ -119,6 +124,9 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Aryan", "onPostExecute: ");
             progressDialog.dismiss();
             try {
+                db = dbhandler.getWritableDatabase();
+                dbhandler.deleteFLdb(db);
+
                 JSONObject jsonObject = new JSONObject(s);
                 JSONArray jsonArray = jsonObject.getJSONArray("smslist");
 
@@ -126,10 +134,8 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                     // model class display on screen //
-                    Model_class model_class = new Model_class();
-                    model_class.setTitle(jsonObject1.getString("name"));
-                    model_class.setDetails(jsonObject1.getString("details"));
-                    model_class.setImage(jsonObject1.getString("image"));
+                    Model_class model_class = new Model_class(jsonObject1.getString("name"),jsonObject1.getString("details"),jsonObject1.getString("image"));
+                    dbhandler.saveDetailsTldb(db,jsonObject1.getString("name"),jsonObject1.getString("details"),jsonObject1.getString("image"));
                     list.add(model_class);
                 }
             } catch (JSONException e) {

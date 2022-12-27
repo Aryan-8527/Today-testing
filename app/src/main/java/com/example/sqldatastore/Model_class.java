@@ -3,11 +3,12 @@ package com.example.sqldatastore;
 public class Model_class {
      String title , details , image;
 
-    public Model_class() {
+    public Model_class(String title,String details,String image) {
         this.title = title;
         this.details = details;
         this.image = image;
     }
+
 
     public String getTitle() {
         return title;
